@@ -549,6 +549,18 @@ async function apiAction(payload) {
   return d;
 }
 
+// Fire-and-forget ke Sheets — tidak nunggu response
+function bgSync(payload) {
+  if (!API_URL) return;
+  const url = API_URL + '?action=' + payload.action + '&payload=' + encodeURIComponent(JSON.stringify(payload));
+  const cb = 'bg_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+  const sc = document.createElement('script');
+  window[cb] = d => { delete window[cb]; sc.parentNode && sc.parentNode.removeChild(sc); };
+  sc.onerror = () => { delete window[cb]; sc.parentNode && sc.parentNode.removeChild(sc); };
+  sc.src = url + '&callback=' + cb;
+  document.head.appendChild(sc);
+}
+
 // ══════════════════════════════════════════════════════════════════════════
 //  LOAD DATA
 // ══════════════════════════════════════════════════════════════════════════
@@ -981,33 +993,32 @@ async function saveCustomer() {
   };
   if (!API_URL) { toast('Belum terhubung ke Sheets', true); return; }
   try {
-    setSyncDot('spin','Menyimpan...');
-    const action = editCustomerIndex >= 0 ? 'update' : 'add';
-    const payload = {action, data:obj};
-    if (editCustomerIndex >= 0) payload.rowIndex = customers[editCustomerIndex]._row;
-    await apiAction(payload);
-    // Update lokal langsung tanpa reload penuh
+    // Update lokal langsung — sync ke Sheets di background
     if (editCustomerIndex >= 0) {
       customers[editCustomerIndex] = {...customers[editCustomerIndex], ...obj};
     } else {
-      obj.tgl_masuk = todayStr(); obj._row = 9999;
+      obj.tgl_masuk = todayStr(); obj._row = Date.now();
       customers.push(obj);
     }
     renderDB(); updateStats();
-    setSyncDot('ok', 'Tersinkron · ' + new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}));
+    // Fire-and-forget ke Sheets
+    const action = editCustomerIndex >= 0 ? 'update' : 'add';
+    const payload = {action, data:obj};
+    if (editCustomerIndex >= 0) payload.rowIndex = customers[editCustomerIndex]?._row || customers[customers.length-1]._row;
+    bgSync(payload);
+    setSyncDot('ok', 'Disimpan lokal · sync background');
     toast(editCustomerIndex >= 0 ? '✓ Data diperbarui' : '✓ Customer ditambahkan');
     closeModal('modal-customer');
-  } catch(e) { setSyncDot('err','Gagal'); toast('Gagal: '+e.message, true); }
+  } catch(e) { toast('Gagal: '+e.message, true); }
 }
 
 async function deleteCustomer(i) {
   if (!confirm(`Hapus "${customers[i].nama}"?`)) return;
   try {
-    setSyncDot('spin','Menghapus...');
-    await apiAction({action:'delete', rowIndex:customers[i]._row});
+    bgSync({action:'delete', rowIndex:customers[i]._row});
     customers.splice(i, 1);
     renderDB(); updateStats();
-    setSyncDot('ok', 'Tersinkron · ' + new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}));
+    setSyncDot('ok', 'Disimpan lokal · sync background');
     toast('Customer dihapus');
   } catch(e) { toast('Gagal hapus: '+e.message, true); }
 }
@@ -1060,30 +1071,24 @@ async function saveLogFU() {
     produk:'', nilai:'', platform:'', catatan:''
   };
   try {
-    setSyncDot('spin','Menyimpan log...');
-    await apiAction({action:'addLog', data:obj});
     // Update lokal langsung
     activityLog.unshift(obj);
     renderPanelFULog(activeCustomer.nama);
     renderLog();
-    toast('✓ Log follow-up disimpan');
-    closeModal('modal-fu');
-    setSyncDot('ok', 'Tersinkron · ' + new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}));
-
-    // Auto-update jadwal FU lanjutan di customer jika ada
+    // Fire-and-forget ke Sheets
+    bgSync({action:'addLog', data:obj});
+    // Auto-update jadwal FU lanjutan
     if (obj.next_fu === 'Ya' && obj.next_fu_date) {
       const idx = customers.findIndex(c => c.nama === activeCustomer.nama);
       if (idx >= 0) {
-        const updPayload = {
-          action:'update',
-          rowIndex: customers[idx]._row,
-          data: {...customers[idx], jadwal_fu: obj.next_fu_date, prioritas_fu:''}
-        };
-        await apiAction(updPayload);
         customers[idx] = {...customers[idx], jadwal_fu: obj.next_fu_date, prioritas_fu:''};
+        bgSync({action:'update', rowIndex:customers[idx]._row, data:customers[idx]});
         renderDB(); updateStats();
       }
     }
+    setSyncDot('ok', 'Disimpan lokal · sync background');
+    toast('✓ Log follow-up disimpan');
+    closeModal('modal-fu');
   } catch(e) { toast('Gagal simpan log: '+e.message, true); }
 }
 
@@ -1104,23 +1109,22 @@ async function saveClosing() {
     topik:'', respons:'', resp_cat:'', next_fu:'', next_fu_date:''
   };
   try {
-    setSyncDot('spin','Menyimpan...');
-    await apiAction({action:'addLog', data:obj});
-    // Update customer lokal langsung
+    // Update lokal langsung
     activityLog.unshift(obj);
+    bgSync({action:'addLog', data:obj});
     const idx = customers.findIndex(c => c.nama === activeCustomer.nama);
     if (idx >= 0) {
       const cust = customers[idx];
       const newTotal = (parseInt(cust.total_order||0) + 1);
       const newTag = newTotal >= 4 ? 'Platinum' : newTotal >= 2 ? 'Gold' : 'Silver';
       const updData = {...cust, total_order:String(newTotal), tag:newTag, status:'Follow-up'};
-      await apiAction({action:'update', rowIndex:cust._row, data:updData});
+      bgSync({action:'update', rowIndex:cust._row, data:updData});
       customers[idx] = updData;
       if (activeCustomer) activeCustomer = customers[idx];
     }
     renderDB(); updateStats(); renderLog();
     renderPanelOrderLog(activeCustomer ? activeCustomer.nama : '');
-    setSyncDot('ok', 'Tersinkron · ' + new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}));
+    setSyncDot('ok', 'Disimpan lokal · sync background');
     toast('🎉 Closing berhasil disimpan! Tag customer diperbarui.');
     closeModal('modal-closing');
   } catch(e) { toast('Gagal simpan closing: '+e.message, true); }
