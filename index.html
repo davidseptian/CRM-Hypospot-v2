@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Hypospot Shoes Care</title>
+<style>
+:root {
+  --black:#1A1A1A;--gold:#B8860B;--gold-mid:#DAA520;--gold-light:#FFF8DC;
+  --white:#fff;--bg:#F7F6F3;--bg2:#EEECEA;--border:#DDD9D0;
+  --text:#1A1A1A;--muted:#888780;--radius:8px;--radius-lg:12px;
+  --hot-bg:#FAECE7;--hot-txt:#993C1D;--warm-bg:#FEF3CD;--warm-txt:#7A4A0B;
+  --cold-bg:#E3EFFE;--cold-txt:#1A4F8C;--fu-bg:#EDECFE;--fu-txt:#4A43B0;
+  --cross-bg:#E4F4DC;--cross-txt:#2E6010;--lost-bg:#FEECEC;--lost-txt:#981B1B;
+  --platinum-bg:#F3EFFE;--platinum-txt:#5B21B6;
+  --gold-tag-bg:#FEF9C3;--gold-tag-txt:#854D0E;
+  --silver-bg:#F1F5F9;--silver-txt:#475569;
+  --prospect-bg:#E0F2FE;--prospect-txt:#0369A1;
+  --dormant-bg:#FFE4E6;--dormant-txt:#9F1239;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+
+/* ── HEADER ── */
+header{background:var(--black);height:54px;display:flex;align-items:center;gap:0;position:sticky;top:0;z-index:50;border-bottom:1px solid #2a2a2a}
+.logo{font-size:14px;font-weight:700;color:#fff;letter-spacing:.8px;padding:0 20px}
+.logo span{color:var(--gold-mid)}
+.nav-tabs{display:flex;height:100%;margin-left:8px}
+.nav-tab{padding:0 20px;height:100%;display:flex;align-items:center;font-size:13px;font-weight:500;color:#888;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;border:none;background:none;font-family:inherit}
+.nav-tab:hover{color:#ccc}
+.nav-tab.active{color:var(--gold-mid);border-bottom:2px solid var(--gold-mid)}
+.spacer{flex:1}
+.sync-pill{display:flex;align-items:center;gap:7px;background:#111;border:1px solid #333;border-radius:20px;padding:5px 12px;font-size:12px;color:#aaa;margin-right:8px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#444;flex-shrink:0;transition:background .3s}
+.sync-dot.ok{background:#22C55E}.sync-dot.err{background:#EF4444}.sync-dot.spin{background:var(--gold-mid);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hbtn{padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #3a3a3a;background:#222;color:#ccc;font-family:inherit;transition:all .15s;margin-right:6px}
+.hbtn:hover{background:#333;color:#fff}
+
+/* ── SETUP BANNER ── */
+#setup-banner{background:var(--gold-light);border-bottom:2px solid var(--gold);padding:11px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
+#setup-banner input{padding:7px 11px;border:1.5px solid var(--gold);border-radius:var(--radius);font-size:12px;width:400px;background:white;font-family:monospace}
+.sbtn{padding:7px 16px;background:var(--gold);color:white;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-weight:600;font-family:inherit}
+.cls-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;margin-left:auto}
+
+/* ── PAGES ── */
+.page{display:none}.page.active{display:block}
+.container{max-width:1500px;margin:0 auto;padding:20px 24px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+.stat{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;cursor:pointer;transition:box-shadow .15s}
+.stat:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.stat .val{font-size:26px;font-weight:700;color:var(--black);line-height:1.1}
+.stat .lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500}
+.stat.accent{border-left:3px solid var(--gold)}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.4;pointer-events:none}
+.search{padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;width:200px;background:white;font-family:inherit}
+.search:focus{outline:none;border-color:var(--gold)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:white;font-size:12px;cursor:pointer;color:var(--muted);white-space:nowrap;transition:all .15s;font-family:inherit;font-weight:500}
+.chip:hover{border-color:#aaa;color:var(--text)}.chip.active{background:var(--black);color:white;border-color:var(--black)}
+.btn{padding:8px 15px;border-radius:var(--radius);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:500;border:1px solid var(--border);background:white;color:var(--text);transition:all .15s;font-family:inherit;white-space:nowrap}
+.btn:hover{background:var(--bg2)}.btn-primary{background:var(--black);color:white;border-color:var(--black)}.btn-primary:hover{background:#2a2a2a}
+.btn-gold{background:var(--gold);color:white;border-color:var(--gold)}.btn-gold:hover{background:var(--gold-mid)}
+.btn-red{background:#DC2626;color:white;border-color:#DC2626}.btn-red:hover{background:#B91C1C}
+.btn-sm{padding:4px 9px;font-size:12px;border-radius:6px}
+.btn-xs{padding:3px 7px;font-size:11px;border-radius:5px}
+
+/* ── TABLE ── */
+.table-wrap{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:1000px}
+thead th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#999;background:var(--black);white-space:nowrap;letter-spacing:.4px;text-transform:uppercase}
+tbody td{padding:9px 12px;border-bottom:1px solid #F0EDE8;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#FDFCFA;cursor:pointer}
+tbody tr.overdue td{background:#FFF8F8}
+tbody tr.overdue td:first-child{border-left:3px solid var(--lost-txt);padding-left:9px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;gap:3px}
+.hot{background:var(--hot-bg);color:var(--hot-txt)}.warm{background:var(--warm-bg);color:var(--warm-txt)}
+.cold{background:var(--cold-bg);color:var(--cold-txt)}.followup{background:var(--fu-bg);color:var(--fu-txt)}
+.crosssell{background:var(--cross-bg);color:var(--cross-txt)}.lost{background:var(--lost-bg);color:var(--lost-txt)}
+.tag-platinum{background:var(--platinum-bg);color:var(--platinum-txt)}
+.tag-gold{background:var(--gold-tag-bg);color:var(--gold-tag-txt)}
+.tag-silver{background:var(--silver-bg);color:var(--silver-txt)}
+.tag-prospect{background:var(--prospect-bg);color:var(--prospect-txt)}
+.tag-dormant{background:var(--dormant-bg);color:var(--dormant-txt)}
+.fu-tag{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;margin-left:4px}
+.tnow{background:var(--lost-bg);color:var(--lost-txt)}.tsoon{background:var(--hot-bg);color:var(--hot-txt)}
+.tweek{background:var(--warm-bg);color:var(--warm-txt)}.tmonth{background:var(--cross-bg);color:var(--cross-txt)}
+
+/* ── DETAIL PANEL ── */
+#detail-panel{position:fixed;right:-520px;top:0;bottom:0;width:500px;background:white;box-shadow:-4px 0 24px rgba(0,0,0,.15);z-index:200;transition:right .3s ease;display:flex;flex-direction:column}
+#detail-panel.open{right:0}
+.panel-header{background:var(--black);padding:16px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.panel-header h3{color:white;font-size:15px;font-weight:700;flex:1}
+.panel-close{background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;padding:2px 6px;line-height:1}
+.panel-close:hover{color:white}
+.panel-tabs{display:flex;background:#111;flex-shrink:0}
+.panel-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;border:none;background:none;font-family:inherit}
+.panel-tab.active{color:var(--gold-mid);border-bottom:2px solid var(--gold-mid)}
+.panel-body{flex:1;overflow-y:auto;padding:16px}
+.panel-tab-content{display:none}.panel-tab-content.active{display:block}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.info-item{background:var(--bg);border-radius:var(--radius);padding:10px 12px}
+.info-item .il{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.info-item .iv{font-size:13px;font-weight:600;color:var(--black)}
+.log-entry{background:var(--bg);border-radius:var(--radius);padding:12px;margin-bottom:8px;border-left:3px solid var(--border)}
+.log-entry.closing{border-left-color:var(--gold)}
+.log-entry.positive{border-left-color:#22C55E}
+.log-entry.negative{border-left-color:#EF4444}
+.log-entry.no-response{border-left-color:#94A3B8}
+.log-meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.log-date{font-size:11px;color:var(--muted);font-weight:500}
+.log-type{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.log-type.fu{background:var(--fu-bg);color:var(--fu-txt)}
+.log-type.cl{background:var(--cross-bg);color:var(--cross-txt)}
+.log-topic{font-size:12px;font-weight:600;color:var(--black);margin-bottom:4px}
+.log-response{font-size:12px;color:#444;margin-bottom:4px;font-style:italic}
+.log-pic{font-size:11px;color:var(--muted)}
+.empty-log{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px}
+.panel-action-bar{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;background:white}
+#overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199}
+#overlay-bg.open{display:block}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.overlay.open{display:flex}
+.modal{background:white;border-radius:14px;padding:24px;width:min(520px,100%);max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.modal-lg{width:min(600px,100%)}
+.modal h2{font-size:15px;font-weight:700;margin-bottom:18px;color:var(--black)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+input[type=text],input[type=date],input[type=number],select,textarea{padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;background:white;color:var(--text);transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.1)}
+textarea{resize:vertical;min-height:72px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--bg2)}
+
+/* ── DASHBOARD ── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.dash-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px}
+.dash-card h4{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.dash-stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg2)}
+.dash-stat-row:last-child{border-bottom:none}
+.dash-stat-label{font-size:13px;color:var(--text)}
+.dash-stat-val{font-size:14px;font-weight:700;color:var(--black)}
+.dormant-list{margin-top:4px}
+.dormant-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--dormant-bg);border-radius:6px;margin-bottom:6px}
+.dormant-item .dn{font-size:12px;font-weight:600;color:var(--dormant-txt)}
+.dormant-item .dd{font-size:11px;color:var(--dormant-txt);opacity:.8}
+
+/* ── ACTIVITY LOG PAGE ── */
+.log-filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+
+/* ── MISC ── */
+.empty-state{text-align:center;padding:56px 20px;color:var(--muted);font-size:13px}
+.loading-row td{text-align:center;color:var(--muted);padding:40px;font-size:13px}
+#toast{position:fixed;bottom:24px;right:24px;background:var(--black);color:white;padding:11px 18px;border-radius:var(--radius);font-size:13px;z-index:999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+#toast.show{opacity:1;transform:translateY(0)}#toast.err{background:#C0392B}
+.section-title{font-size:14px;font-weight:700;color:var(--black);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title span{color:var(--muted);font-weight:400;font-size:12px}
+.resp-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.resp-pos{background:#DCFCE7;color:#15803D}
+.resp-neg{background:var(--lost-bg);color:var(--lost-txt)}
+.resp-nr{background:var(--silver-bg);color:var(--silver-txt)}
+.resp-neu{background:var(--warm-bg);color:var(--warm-txt)}
+
+@media(max-width:700px){
+  .dash-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  #detail-panel{width:100%;right:-100%}
+  .container{padding:12px}
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="logo">HYPO<span>SPOT</span></div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="goPage('db')">📋 Database</button>
+    <button class="nav-tab" onclick="goPage('log')">📝 Activity Log</button>
+    <button class="nav-tab" onclick="goPage('dash')">📊 Dashboard</button>
+  </nav>
+  <div class="spacer"></div>
+  <div class="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Belum terhubung</span></div>
+  <button class="hbtn" onclick="loadAll()">↻</button>
+  <button class="hbtn" onclick="showSetup()">⚙</button>
+</header>
+
+<!-- Setup Banner -->
+<div id="setup-banner" style="display:none">
+  <strong style="color:var(--gold)">⚡ Setup</strong>
+  <span style="color:#555">URL Google Apps Script:</span>
+  <input type="text" id="api-url-input" placeholder="https://script.google.com/macros/s/XXXXX/exec">
+  <button class="sbtn" onclick="saveApiUrl()">✓ Hubungkan</button>
+  <button class="cls-btn" onclick="document.getElementById('setup-banner').style.display='none'">×</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ PAGE: DATABASE -->
+<div class="page active" id="page-db">
+<div class="container">
+
+  <div class="stats-grid">
+    <div class="stat accent" onclick="setFilter2('all')"><div class="val" id="st-total">0</div><div class="lbl">Total Customer</div></div>
+    <div class="stat" onclick="setFilter2('hot')"><div class="val" id="st-hot">0</div><div class="lbl">🔥 Hot Prospect</div></div>
+    <div class="stat" onclick="setFilter2('platinum')"><div class="val" id="st-platinum">0</div><div class="lbl">🌟 Platinum</div></div>
+    <div class="stat" onclick="setFilter2('gold-tag')"><div class="val" id="st-gold">0</div><div class="lbl">🥇 Gold</div></div>
+    <div class="stat" onclick="setFilter2('fu-today')"><div class="val" id="st-fu-today">0</div><div class="lbl">📌 FU Hari Ini</div></div>
+    <div class="stat" onclick="setFilter2('dormant')"><div class="val" id="st-dormant">0</div><div class="lbl">💤 Dormant</div></div>
+    <div class="stat"><div class="val" id="st-pipeline">—</div><div class="lbl">Est. Pipeline (Rp)</div></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" class="search" id="search" placeholder="Cari nama, WA, produk..." oninput="renderDB()">
+    </div>
+    <div class="filters" id="db-filters">
+      <button class="chip active" data-f="all" onclick="setFilter2(this)">Semua</button>
+      <button class="chip" data-f="hot" onclick="setFilter2(this)">🔥 Hot</button>
+      <button class="chip" data-f="warm" onclick="setFilter2(this)">Warm</button>
+      <button class="chip" data-f="cold" onclick="setFilter2(this)">Cold</button>
+      <button class="chip" data-f="followup" onclick="setFilter2(this)">Follow-up</button>
+      <button class="chip" data-f="crosssell" onclick="setFilter2(this)">Cross-sell</button>
+      <button class="chip" data-f="platinum" onclick="setFilter2(this)">🌟 Platinum</button>
+      <button class="chip" data-f="gold-tag" onclick="setFilter2(this)">🥇 Gold</button>
+      <button class="chip" data-f="dormant" onclick="setFilter2(this)">💤 Dormant</button>
+      <button class="chip" data-f="fu-today" onclick="setFilter2(this)">📌 FU Hari Ini</button>
+      <button class="chip" data-f="overdue" onclick="setFilter2(this)">⚠ Terlambat</button>
+    </div>
+    <button class="btn btn-gold" onclick="openAddCustomer()">＋ Tambah</button>
+    <button class="btn" onclick="exportCSV()">⬇ CSV</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Customer</th><th>Tag</th><th>WhatsApp</th><th>Platform</th>
+          <th>Status</th><th>Produk</th><th>FU Terakhir</th><th>Jadwal FU</th>
+          <th>Total Order</th><th>Est. Value</th><th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="db-tbody"><tr class="loading-row"><td colspan="11">⏳ Menghubungkan...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ PAGE: ACTIVITY LOG -->
+<div class="page" id="page-log">
+<div class="container">
+  <div class="section-title">Activity Log <span>— semua riwayat follow-up & closing</span></div>
+  <div class="log-filters">
+    <input type="text" class="search" id="log-search" placeholder="Cari nama customer..." oninput="renderLog()" style="width:200px">
+    <button class="chip active" data-lf="all" onclick="setLogFilter(this)">Semua</button>
+    <button class="chip" data-lf="followup" onclick="setLogFilter(this)">Follow-up</button>
+    <button class="chip" data-lf="closing" onclick="setLogFilter(this)">💰 Closing</button>
+    <button class="chip" data-lf="positive" onclick="setLogFilter(this)">✅ Positif</button>
+    <button class="chip" data-lf="no-response" onclick="setLogFilter(this)">🔇 Tidak Respons</button>
+    <div style="flex:1"></div>
+    <select id="log-customer-filter" onchange="renderLog()" style="padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:white;width:180px">
+      <option value="">Semua Customer</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal</th><th>Customer</th><th>Tipe</th><th>Topik / Produk</th>
+          <th>Respons Customer</th><th>FU Lanjutan</th><th>Nilai (Rp)</th><th>PIC</th>
+        </tr>
+      </thead>
+      <tbody id="log-tbody"><tr class="loading-row"><td colspan="8">⏳ Memuat log...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ PAGE: DASHBOARD -->
+<div class="page" id="page-dash">
+<div class="container">
+  <div class="section-title">Dashboard <span>— ringkasan performa CRM</span></div>
+  <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+    <div class="stat accent"><div class="val" id="d-total-closing">0</div><div class="lbl">Total Closing</div></div>
+    <div class="stat"><div class="val" id="d-closing-month">0</div><div class="lbl">Closing Bulan Ini</div></div>
+    <div class="stat"><div class="val" id="d-total-fu">0</div><div class="lbl">Total Follow-up</div></div>
+    <div class="stat"><div class="val" id="d-revenue">—</div><div class="lbl">Total Revenue (Rp)</div></div>
+    <div class="stat"><div class="val" id="d-conv-rate">—</div><div class="lbl">Conversion Rate</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card">
+      <h4>🏆 Closing per PIC</h4>
+      <div id="d-pic-list"><div class="empty-log">Belum ada data closing</div></div>
+    </div>
+    <div class="dash-card">
+      <h4>📊 Distribusi Tag Customer</h4>
+      <div id="d-tag-dist"></div>
+    </div>
+    <div class="dash-card">
+      <h4>💤 Dormant — Perlu Di-revive</h4>
+      <div class="dormant-list" id="d-dormant-list"><div class="empty-log">Tidak ada customer dormant</div></div>
+    </div>
+    <div class="dash-card">
+      <h4>📅 Closing per Bulan</h4>
+      <div id="d-monthly-list"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════ DETAIL PANEL -->
+<div id="overlay-bg" onclick="closePanel()"></div>
+<div id="detail-panel">
+  <div class="panel-header">
+    <h3 id="panel-name">—</h3>
+    <div id="panel-tag-badge"></div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-tabs">
+    <button class="panel-tab active" onclick="switchPanelTab(0)">👤 Profil</button>
+    <button class="panel-tab" onclick="switchPanelTab(1)">📝 Follow-up Log</button>
+    <button class="panel-tab" onclick="switchPanelTab(2)">💰 Riwayat Order</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-tab-content active" id="ptab-0">
+      <div class="info-grid" id="panel-info-grid"></div>
+      <div id="panel-catatan-wrap"></div>
+    </div>
+    <div class="panel-tab-content" id="ptab-1">
+      <div id="panel-fu-log"></div>
+    </div>
+    <div class="panel-tab-content" id="ptab-2">
+      <div id="panel-order-log"></div>
+    </div>
+  </div>
+  <div class="panel-action-bar">
+    <button class="btn btn-primary" onclick="openLogFU()" style="flex:1">＋ Log Follow-up</button>
+    <button class="btn btn-gold" onclick="openLogClosing()" style="flex:1">💰 Input Closing</button>
+    <button class="btn" onclick="editCurrentCustomer()">✏ Edit</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ MODALS -->
+
+<!-- Modal: Tambah/Edit Customer -->
+<div class="overlay" id="modal-customer">
+  <div class="modal modal-lg">
+    <h2 id="modal-customer-title">Tambah Customer</h2>
+    <div class="form-grid">
+      <div class="field"><label>Nama Customer *</label><input type="text" id="fc-nama" placeholder="Budi Santoso"></div>
+      <div class="field"><label>No. WhatsApp</label><input type="text" id="fc-wa" placeholder="081234567890"></div>
+      <div class="field"><label>Platform</label>
+        <select id="fc-platform"><option>Shopee</option><option>TikTok Shop</option><option>Tokopedia</option><option>WhatsApp Langsung</option><option>Offline / B2B</option></select>
+      </div>
+      <div class="field"><label>Status Prospek</label>
+        <select id="fc-status">
+          <option value="Hot">🔥 Hot</option><option value="Warm">☀️ Warm</option>
+          <option value="Cold">❄️ Cold</option><option value="Follow-up">🔔 Follow-up</option>
+          <option value="Cross-sell">✨ Cross-sell</option><option value="Lost">✗ Lost</option>
+        </select>
+      </div>
+      <div class="field"><label>Tag Customer</label>
+        <select id="fc-tag">
+          <option value="Prospect">🔍 Prospect</option><option value="Silver">🥈 Silver</option>
+          <option value="Gold">🥇 Gold</option><option value="Platinum">🌟 Platinum</option>
+          <option value="Dormant">💤 Dormant</option>
+        </select>
+      </div>
+      <div class="field"><label>Total Order (kali)</label><input type="number" id="fc-total-order" placeholder="0" min="0"></div>
+      <div class="field full"><label>Produk / Interest</label><input type="text" id="fc-produk" placeholder="Shoe Cleaner Premium, Brush Set..."></div>
+      <div class="field full"><label>Rekomendasi Cross-sell</label><input type="text" id="fc-cross" placeholder="Brush Set + Waterproof Spray"></div>
+      <div class="field"><label>Jadwal Follow-up</label><input type="date" id="fc-fu-date"></div>
+      <div class="field"><label>Prioritas FU</label>
+        <select id="fc-prio"><option value="">— Pilih —</option><option>Hari Ini</option><option>Besok</option><option>Minggu Ini</option><option>Bulan Ini</option><option>Sudah FU</option></select>
+      </div>
+      <div class="field"><label>Est. Value (Rp)</label><input type="number" id="fc-value" placeholder="150000" min="0"></div>
+      <div class="field"><label>Frekuensi Beli</label><input type="text" id="fc-freq" placeholder="3x"></div>
+      <div class="field full"><label>Catatan Admin</label><textarea id="fc-catatan" placeholder="Preferensi, riwayat, info penting..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-customer')">Batal</button>
+      <button class="btn btn-primary" onclick="saveCustomer()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Log Follow-up -->
+<div class="overlay" id="modal-fu">
+  <div class="modal">
+    <h2>📝 Log Follow-up</h2>
+    <div id="fu-customer-name" style="font-size:13px;color:var(--muted);margin-bottom:16px;padding:8px 12px;background:var(--bg);border-radius:var(--radius)"></div>
+    <div class="form-grid">
+      <div class="field"><label>Tanggal Follow-up *</label><input type="date" id="ffu-date"></div>
+      <div class="field"><label>Dilakukan Oleh (PIC)</label>
+        <select id="ffu-pic"><option>Dimas</option><option>David</option></select>
+      </div>
+      <div class="field full"><label>Follow-up Mengenai Apa *</label>
+        <input type="text" id="ffu-topic" placeholder="Penawaran Shoe Cleaner, Info promo flash sale...">
+      </div>
+      <div class="field full"><label>Respons Customer</label>
+        <textarea id="ffu-response" placeholder="Tulis respons customer di sini — misalnya: 'Tertarik tapi minta diskon 10%', 'Tidak balas WA', 'Minta dikirim minggu depan'..." style="min-height:90px"></textarea>
+      </div>
+      <div class="field"><label>Kategori Respons</label>
+        <select id="ffu-resp-cat">
+          <option value="Positif">✅ Positif — Tertarik / Mau beli</option>
+          <option value="Negatif">❌ Negatif — Menolak / Tidak tertarik</option>
+          <option value="Tidak Respons">🔇 Tidak Respons</option>
+          <option value="Netral">〰 Netral — Masih pikir-pikir</option>
+        </select>
+      </div>
+      <div class="field"><label>Ada Follow-up Lanjutan?</label>
+        <select id="ffu-next" onchange="toggleNextFU()">
+          <option value="Tidak">Tidak</option>
+          <option value="Ya">Ya</option>
+        </select>
+      </div>
+      <div class="field" id="ffu-next-date-wrap" style="display:none">
+        <label>Tanggal FU Lanjutan</label>
+        <input type="date" id="ffu-next-date">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-fu')">Batal</button>
+      <button class="btn btn-primary" onclick="saveLogFU()">💾 Simpan Log</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Input Closing -->
+<div class="overlay" id="modal-closing">
+  <div class="modal">
+    <h2>💰 Input Closing</h2>
+    <div id="cl-customer-name" style="font-size:13px;color:var(--muted);margin-bottom:16px;padding:8px 12px;background:var(--bg);border-radius:var(--radius)"></div>
+    <div class="form-grid">
+      <div class="field"><label>Tanggal Closing *</label><input type="date" id="fcl-date"></div>
+      <div class="field"><label>PIC (yang berhasil closing)</label>
+        <select id="fcl-pic"><option>Dimas</option><option>David</option></select>
+      </div>
+      <div class="field full"><label>Produk yang Dibeli *</label>
+        <input type="text" id="fcl-produk" placeholder="Shoe Cleaner 250ml + Brush Set">
+      </div>
+      <div class="field"><label>Nilai Transaksi (Rp) *</label>
+        <input type="number" id="fcl-nilai" placeholder="185000" min="0">
+      </div>
+      <div class="field"><label>Platform Transaksi</label>
+        <select id="fcl-platform"><option>Shopee</option><option>TikTok Shop</option><option>Tokopedia</option><option>WhatsApp Langsung</option><option>Offline / B2B</option></select>
+      </div>
+      <div class="field full"><label>Catatan Tambahan</label>
+        <textarea id="fcl-catatan" placeholder="Minta gift wrap, repeat order ke-3, referral dari Kak X..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-closing')">Batal</button>
+      <button class="btn btn-gold" onclick="saveClosing()">💰 Simpan Closing</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════════════════
+const SK = 'hypospot_crm_v5';
+let API_URL = localStorage.getItem(SK) || '';
+let customers = [];
+let activityLog = [];
+let dbFilter = 'all';
+let logFilter = 'all';
+let editCustomerIndex = -1;
+let activeCustomer = null;
+let refreshTimer = null;
+
+// ══════════════════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ffu-date').value = todayStr();
+  document.getElementById('fcl-date').value = todayStr();
+  if (API_URL) {
+    document.getElementById('api-url-input').value = API_URL;
+    loadAll();
+    startAutoRefresh();
+  }
+});
+
+function showSetup() {
+  const b = document.getElementById('setup-banner');
+  b.style.display = b.style.display === 'none' ? 'flex' : 'none';
+}
+
+function saveApiUrl() {
+  const val = document.getElementById('api-url-input').value.trim();
+  if (!val.startsWith('https://script.google.com')) { toast('URL tidak valid', true); return; }
+  API_URL = val; localStorage.setItem(SK, API_URL);
+  document.getElementById('setup-banner').style.display = 'none';
+  loadAll(); startAutoRefresh();
+}
+
+function startAutoRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(loadAll, 60000);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'dash') renderDashboard();
+  if (id === 'log') renderLog();
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  JSONP API
+// ══════════════════════════════════════════════════════════════════════════
+function jsonpFetch(url) {
+  return new Promise((resolve, reject) => {
+    const cb = 'jcb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const sc = document.createElement('script');
+    const to = setTimeout(() => { cleanup(); reject(new Error('Timeout')); }, 20000);
+    window[cb] = d => { cleanup(); resolve(d); };
+    sc.onerror = () => { cleanup(); reject(new Error('Network error')); };
+    sc.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
+    document.head.appendChild(sc);
+    function cleanup() { clearTimeout(to); delete window[cb]; sc.parentNode && sc.parentNode.removeChild(sc); }
+  });
+}
+
+async function apiAction(payload) {
+  const url = API_URL + '?action=' + payload.action + '&payload=' + encodeURIComponent(JSON.stringify(payload));
+  const d = await jsonpFetch(url);
+  if (!d.success) throw new Error(d.error || 'Failed');
+  return d;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  LOAD DATA
+// ══════════════════════════════════════════════════════════════════════════
+async function loadAll() {
+  if (!API_URL) return;
+  setSyncDot('spin', 'Memuat...');
+  try {
+    const [cData, lData] = await Promise.all([
+      jsonpFetch(API_URL + '?action=getAll'),
+      jsonpFetch(API_URL + '?action=getLogs')
+    ]);
+    if (cData.success) customers = cData.rows || [];
+    if (lData.success) activityLog = lData.rows || [];
+    renderDB(); renderLog(); renderDashboard(); updateStats();
+    populateCustomerFilter();
+    const t = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    setSyncDot('ok', 'Tersinkron · ' + t);
+  } catch(e) {
+    setSyncDot('err', 'Gagal koneksi');
+    if (customers.length === 0)
+      document.getElementById('db-tbody').innerHTML = '<tr class="loading-row"><td colspan="11">❌ Gagal terhubung. Cek URL Apps Script.</td></tr>';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  DATABASE PAGE
+// ══════════════════════════════════════════════════════════════════════════
+function setFilter2(el) {
+  if (typeof el === 'string') {
+    dbFilter = el;
+    document.querySelectorAll('#db-filters .chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.f === el);
+    });
+  } else {
+    document.querySelectorAll('#db-filters .chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    dbFilter = el.dataset.f;
+  }
+  renderDB();
+}
+
+function renderDB() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const today = todayStr();
+  let data = customers.filter(c => {
+    if (q && !((c.nama||'')+(c.wa||'')+(c.produk||'')).toLowerCase().includes(q)) return false;
+    switch(dbFilter) {
+      case 'hot':       return c.status === 'Hot';
+      case 'warm':      return c.status === 'Warm';
+      case 'cold':      return c.status === 'Cold';
+      case 'followup':  return c.status === 'Follow-up';
+      case 'crosssell': return c.status === 'Cross-sell';
+      case 'platinum':  return c.tag === 'Platinum';
+      case 'gold-tag':  return c.tag === 'Gold';
+      case 'dormant':   return c.tag === 'Dormant';
+      case 'fu-today':  return c.jadwal_fu === today || c.jadwal_fu === addDays(1);
+      case 'overdue':   return c.jadwal_fu && c.jadwal_fu < today && c.prioritas_fu !== 'Sudah FU';
+      default: return true;
+    }
+  });
+
+  const tbody = document.getElementById('db-tbody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state">Tidak ada data customer</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map(c => {
+    const ri = customers.indexOf(c);
+    const overdue = c.jadwal_fu && c.jadwal_fu < today && c.prioritas_fu !== 'Sudah FU';
+    const waNum = (c.wa||'').replace(/^0/,'62').replace(/\D/g,'');
+    const waLink = c.wa ? `<a href="https://wa.me/${waNum}" target="_blank" onclick="event.stopPropagation()" style="color:var(--gold);text-decoration:none;font-weight:600">${esc(c.wa)}</a>` : '—';
+    const num = parseFloat(String(c.est_value||0).replace(/[^0-9.]/g,''));
+    const val = num > 0 ? 'Rp '+num.toLocaleString('id-ID') : '—';
+    const fuLast = getLastFU(c.nama);
+    return `<tr class="${overdue?'overdue':''}" onclick="openPanel(${ri})">
+      <td><strong>${esc(c.nama||'')}</strong></td>
+      <td>${tagBadge(c.tag)}</td>
+      <td>${waLink}</td>
+      <td><span style="font-size:11px;color:var(--muted);background:var(--bg2);padding:2px 7px;border-radius:5px">${esc(c.platform||'—')}</span></td>
+      <td>${badge(c.status)}</td>
+      <td style="font-size:12px;color:#444;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.produk||'—')}</td>
+      <td style="font-size:11px;color:var(--muted)">${fuLast || '—'}</td>
+      <td style="white-space:nowrap;font-size:12px">${fmtDate(c.jadwal_fu)}${fuTag2(c.jadwal_fu,today)}</td>
+      <td style="font-size:12px;text-align:center;font-weight:600">${c.total_order||'0'}x</td>
+      <td style="font-size:12px;font-weight:500">${val}</td>
+      <td style="white-space:nowrap" onclick="event.stopPropagation()">
+        <button class="btn btn-sm" onclick="openEditCustomer(${ri})" title="Edit">✏</button>
+        <button class="btn btn-sm" onclick="deleteCustomer(${ri})" style="color:var(--lost-txt)" title="Hapus">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function updateStats() {
+  const today = todayStr();
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  set('st-total',    customers.length);
+  set('st-hot',      customers.filter(c=>c.status==='Hot').length);
+  set('st-platinum', customers.filter(c=>c.tag==='Platinum').length);
+  set('st-gold',     customers.filter(c=>c.tag==='Gold').length);
+  set('st-dormant',  customers.filter(c=>c.tag==='Dormant').length);
+  set('st-fu-today', customers.filter(c=>c.jadwal_fu===today||c.jadwal_fu===addDays(1)).length);
+  const pip = customers.reduce((t,c)=>t+parseFloat(String(c.est_value||0).replace(/[^0-9.]/g,'')||0),0);
+  set('st-pipeline', pip>0 ? 'Rp '+Math.round(pip).toLocaleString('id-ID') : '—');
+}
+
+function getLastFU(nama) {
+  const logs = activityLog.filter(l => l.customer === nama && l.tipe === 'Follow-up');
+  if (!logs.length) return null;
+  logs.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+  return fmtDate(logs[0].tanggal);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  DETAIL PANEL
+// ══════════════════════════════════════════════════════════════════════════
+function openPanel(idx) {
+  activeCustomer = customers[idx];
+  const c = activeCustomer;
+  document.getElementById('panel-name').textContent = c.nama || '—';
+  document.getElementById('panel-tag-badge').innerHTML = tagBadge(c.tag);
+
+  // Tab 0 — Profil
+  const fuLogs = activityLog.filter(l => l.customer === c.nama && l.tipe === 'Follow-up');
+  const closings = activityLog.filter(l => l.customer === c.nama && l.tipe === 'Closing');
+  const totalRev = closings.reduce((t,l) => t + parseFloat(String(l.nilai||0).replace(/[^0-9.]/g,'')||0), 0);
+  const waNum = (c.wa||'').replace(/^0/,'62').replace(/\D/g,'');
+
+  document.getElementById('panel-info-grid').innerHTML = [
+    ['Platform', esc(c.platform||'—')],
+    ['Status Prospek', badge(c.status)],
+    ['Total Order', `<strong>${c.total_order||0}x</strong>`],
+    ['Total Revenue', totalRev > 0 ? `<strong>Rp ${totalRev.toLocaleString('id-ID')}</strong>` : '—'],
+    ['Est. Value', c.est_value && c.est_value !== '0' ? `Rp ${parseFloat(c.est_value).toLocaleString('id-ID')}` : '—'],
+    ['Jumlah FU', `<strong>${fuLogs.length}x</strong>`],
+    ['Jadwal FU', fmtDate(c.jadwal_fu) || '—'],
+    ['Order Terakhir', getLastClosingDate(c.nama) || '—'],
+    ['Tgl Masuk CRM', fmtDate(c.tgl_masuk) || '—'],
+    ['WhatsApp', c.wa ? `<a href="https://wa.me/${waNum}" target="_blank" style="color:var(--gold)">${esc(c.wa)}</a>` : '—'],
+  ].map(([l,v]) => `<div class="info-item"><div class="il">${l}</div><div class="iv">${v}</div></div>`).join('');
+
+  document.getElementById('panel-catatan-wrap').innerHTML = c.catatan
+    ? `<div style="background:var(--gold-light);border:1px solid var(--gold);border-radius:var(--radius);padding:12px;margin-top:4px;font-size:12px;color:#444;line-height:1.6"><strong style="display:block;margin-bottom:4px;font-size:11px;color:var(--gold)">📋 CATATAN ADMIN</strong>${esc(c.catatan)}</div>`
+    : '';
+
+  // Tab 1 — FU Log
+  renderPanelFULog(c.nama);
+
+  // Tab 2 — Order Log
+  renderPanelOrderLog(c.nama);
+
+  switchPanelTab(0);
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('overlay-bg').classList.add('open');
+}
+
+function renderPanelFULog(nama) {
+  const logs = activityLog
+    .filter(l => l.customer === nama && l.tipe === 'Follow-up')
+    .sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+
+  const el = document.getElementById('panel-fu-log');
+  if (!logs.length) { el.innerHTML = '<div class="empty-log">Belum ada riwayat follow-up</div>'; return; }
+
+  el.innerHTML = logs.map(l => {
+    const respCls = {
+      'Positif':'positive','Negatif':'negative',
+      'Tidak Respons':'no-response','Netral':''
+    }[l.resp_cat] || '';
+    const respTagCls = {
+      'Positif':'resp-pos','Negatif':'resp-neg',
+      'Tidak Respons':'resp-nr','Netral':'resp-neu'
+    }[l.resp_cat] || '';
+    return `<div class="log-entry ${respCls}">
+      <div class="log-meta">
+        <span class="log-date">📅 ${fmtDate(l.tanggal)}</span>
+        <span class="log-type fu">Follow-up</span>
+        ${l.resp_cat ? `<span class="resp-tag ${respTagCls}">${l.resp_cat}</span>` : ''}
+        ${l.next_fu === 'Ya' ? `<span class="resp-tag resp-neu">FU Lanjutan: ${fmtDate(l.next_fu_date)}</span>` : ''}
+      </div>
+      <div class="log-topic">📌 ${esc(l.topik||'—')}</div>
+      ${l.respons ? `<div class="log-response">"${esc(l.respons)}"</div>` : ''}
+      <div class="log-pic">oleh: <strong>${esc(l.pic||'—')}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+function renderPanelOrderLog(nama) {
+  const logs = activityLog
+    .filter(l => l.customer === nama && l.tipe === 'Closing')
+    .sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+
+  const el = document.getElementById('panel-order-log');
+  if (!logs.length) { el.innerHTML = '<div class="empty-log">Belum ada riwayat order/closing</div>'; return; }
+
+  const total = logs.reduce((t,l) => t + parseFloat(String(l.nilai||0).replace(/[^0-9.]/g,'')||0), 0);
+  el.innerHTML = `<div style="background:var(--cross-bg);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--cross-txt);font-weight:600">
+    💰 Total Revenue: Rp ${total.toLocaleString('id-ID')} (${logs.length}x order)
+  </div>` + logs.map(l => `<div class="log-entry closing">
+    <div class="log-meta">
+      <span class="log-date">📅 ${fmtDate(l.tanggal)}</span>
+      <span class="log-type cl">Closing</span>
+      <span style="font-size:11px;background:var(--bg2);padding:2px 7px;border-radius:8px">${esc(l.platform||'')}</span>
+    </div>
+    <div class="log-topic">🛍 ${esc(l.produk||'—')}</div>
+    <div style="font-size:13px;font-weight:700;color:var(--cross-txt);margin:4px 0">Rp ${parseFloat(String(l.nilai||0).replace(/[^0-9.]/g,'')).toLocaleString('id-ID')}</div>
+    ${l.catatan ? `<div class="log-response">"${esc(l.catatan)}"</div>` : ''}
+    <div class="log-pic">closing oleh: <strong>${esc(l.pic||'—')}</strong></div>
+  </div>`).join('');
+}
+
+function getLastClosingDate(nama) {
+  const logs = activityLog.filter(l => l.customer === nama && l.tipe === 'Closing');
+  if (!logs.length) return null;
+  logs.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+  return fmtDate(logs[0].tanggal);
+}
+
+function closePanel() {
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('overlay-bg').classList.remove('open');
+  activeCustomer = null;
+}
+
+function switchPanelTab(idx) {
+  document.querySelectorAll('.panel-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.panel-tab-content').forEach((c,i) => c.classList.toggle('active', i===idx));
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  ACTIVITY LOG PAGE
+// ══════════════════════════════════════════════════════════════════════════
+function populateCustomerFilter() {
+  const sel = document.getElementById('log-customer-filter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Semua Customer</option>' +
+    [...new Set(customers.map(c=>c.nama))].sort()
+    .map(n => `<option value="${esc(n)}" ${cur===n?'selected':''}>${esc(n)}</option>`).join('');
+}
+
+function setLogFilter(el) {
+  document.querySelectorAll('.log-filters .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  logFilter = el.dataset.lf;
+  renderLog();
+}
+
+function renderLog() {
+  const q = (document.getElementById('log-search')?.value||'').toLowerCase();
+  const custF = document.getElementById('log-customer-filter')?.value || '';
+  let data = [...activityLog].sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+
+  data = data.filter(l => {
+    if (q && !(l.customer||'').toLowerCase().includes(q)) return false;
+    if (custF && l.customer !== custF) return false;
+    switch(logFilter) {
+      case 'followup':     return l.tipe === 'Follow-up';
+      case 'closing':      return l.tipe === 'Closing';
+      case 'positive':     return l.resp_cat === 'Positif';
+      case 'no-response':  return l.resp_cat === 'Tidak Respons';
+      default: return true;
+    }
+  });
+
+  const tbody = document.getElementById('log-tbody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">Tidak ada log</div></td></tr>'; return; }
+
+  tbody.innerHTML = data.map(l => {
+    const respTagCls = {'Positif':'resp-pos','Negatif':'resp-neg','Tidak Respons':'resp-nr','Netral':'resp-neu'}[l.resp_cat]||'';
+    const nilai = l.nilai && l.nilai !== '0' ? 'Rp '+parseFloat(String(l.nilai).replace(/[^0-9.]/g,'')).toLocaleString('id-ID') : '—';
+    const nextFU = l.next_fu === 'Ya' && l.next_fu_date ? `Ya (${fmtDate(l.next_fu_date)})` : '—';
+    return `<tr>
+      <td style="white-space:nowrap;font-size:12px">${fmtDate(l.tanggal)}</td>
+      <td><strong style="cursor:pointer;color:var(--gold)" onclick="openPanelByName('${esc(l.customer)}')">${esc(l.customer||'—')}</strong></td>
+      <td><span class="log-type ${l.tipe==='Closing'?'cl':'fu'}" style="font-size:11px;padding:3px 9px;border-radius:20px">${l.tipe}</span></td>
+      <td style="font-size:12px;max-width:160px">${esc(l.tipe==='Closing'?l.produk:l.topik||'—')}</td>
+      <td style="max-width:180px">
+        ${l.resp_cat ? `<span class="resp-tag ${respTagCls}" style="display:inline-block;margin-bottom:3px">${l.resp_cat}</span><br>` : ''}
+        ${l.respons ? `<span style="font-size:11px;color:var(--muted);font-style:italic">"${esc(l.respons.substring(0,60))}${l.respons.length>60?'…':''}"</span>` : '—'}
+      </td>
+      <td style="font-size:12px;color:var(--muted)">${nextFU}</td>
+      <td style="font-size:12px;font-weight:600;color:var(--cross-txt)">${nilai}</td>
+      <td style="font-size:12px;font-weight:500">${esc(l.pic||'—')}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openPanelByName(nama) {
+  const idx = customers.findIndex(c => c.nama === nama);
+  if (idx >= 0) { openPanel(idx); goPage('db'); document.querySelector('.nav-tab').click(); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════════════════════════════════
+function renderDashboard() {
+  const closings = activityLog.filter(l => l.tipe === 'Closing');
+  const fus = activityLog.filter(l => l.tipe === 'Follow-up');
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const closingMonth = closings.filter(l => l.tanggal.startsWith(thisMonth));
+  const totalRev = closings.reduce((t,l)=>t+parseFloat(String(l.nilai||0).replace(/[^0-9.]/g,'')||0),0);
+  const convRate = fus.length > 0 ? ((closings.length / fus.length)*100).toFixed(1)+'%' : '—';
+
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('d-total-closing',  closings.length);
+  set('d-closing-month',  closingMonth.length);
+  set('d-total-fu',       fus.length);
+  set('d-revenue',        totalRev > 0 ? 'Rp '+Math.round(totalRev).toLocaleString('id-ID') : '—');
+  set('d-conv-rate',      convRate);
+
+  // PIC breakdown
+  const picMap = {};
+  closings.forEach(l => {
+    const p = l.pic||'Unknown';
+    if (!picMap[p]) picMap[p] = {count:0, rev:0};
+    picMap[p].count++;
+    picMap[p].rev += parseFloat(String(l.nilai||0).replace(/[^0-9.]/g,'')||0);
+  });
+  const picEl = document.getElementById('d-pic-list');
+  if (!Object.keys(picMap).length) { picEl.innerHTML = '<div class="empty-log">Belum ada data closing</div>'; }
+  else picEl.innerHTML = Object.entries(picMap)
+    .sort((a,b)=>b[1].count-a[1].count)
+    .map(([name,d]) => `<div class="dash-stat-row">
+      <div class="dash-stat-label">👤 ${esc(name)}<br><small style="color:var(--muted)">${d.count}x closing</small></div>
+      <div class="dash-stat-val" style="color:var(--cross-txt)">Rp ${Math.round(d.rev).toLocaleString('id-ID')}</div>
+    </div>`).join('');
+
+  // Tag distribution
+  const tagMap = {Platinum:0,Gold:0,Silver:0,Prospect:0,Dormant:0};
+  customers.forEach(c => { if(tagMap[c.tag]!==undefined) tagMap[c.tag]++; });
+  const tagColors = {Platinum:'var(--platinum-txt)',Gold:'var(--gold-tag-txt)',Silver:'var(--silver-txt)',Prospect:'var(--prospect-txt)',Dormant:'var(--dormant-txt)'};
+  document.getElementById('d-tag-dist').innerHTML = Object.entries(tagMap)
+    .map(([tag,count]) => `<div class="dash-stat-row">
+      <div class="dash-stat-label">${tagBadge(tag)}</div>
+      <div class="dash-stat-val" style="color:${tagColors[tag]}">${count} customer</div>
+    </div>`).join('');
+
+  // Dormant list
+  const dormants = customers.filter(c => c.tag === 'Dormant');
+  const dormEl = document.getElementById('d-dormant-list');
+  if (!dormants.length) dormEl.innerHTML = '<div class="empty-log">Tidak ada customer dormant 🎉</div>';
+  else dormEl.innerHTML = dormants.slice(0,8).map(c => `
+    <div class="dormant-item" style="cursor:pointer" onclick="openPanelByName('${esc(c.nama)}')">
+      <div class="dn">💤 ${esc(c.nama)}</div>
+      <div class="dd">Order terakhir: ${getLastClosingDate(c.nama)||'—'}</div>
+    </div>`).join('');
+
+  // Monthly closing
+  const monthMap = {};
+  closings.forEach(l => {
+    const m = l.tanggal.slice(0,7);
+    if (!monthMap[m]) monthMap[m] = {count:0, rev:0};
+    monthMap[m].count++;
+    monthMap[m].rev += parseFloat(String(l.nilai||0).replace(/[^0-9.]/g,'')||0);
+  });
+  const monthEl = document.getElementById('d-monthly-list');
+  if (!Object.keys(monthMap).length) monthEl.innerHTML = '<div class="empty-log">Belum ada data</div>';
+  else monthEl.innerHTML = Object.entries(monthMap)
+    .sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6)
+    .map(([m,d]) => {
+      const [y,mo] = m.split('-');
+      const monthName = new Date(y,mo-1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+      return `<div class="dash-stat-row">
+        <div class="dash-stat-label">${monthName}<br><small style="color:var(--muted)">${d.count}x closing</small></div>
+        <div class="dash-stat-val" style="color:var(--cross-txt)">Rp ${Math.round(d.rev).toLocaleString('id-ID')}</div>
+      </div>`;
+    }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CUSTOMER CRUD
+// ══════════════════════════════════════════════════════════════════════════
+function openAddCustomer() {
+  editCustomerIndex = -1;
+  document.getElementById('modal-customer-title').textContent = 'Tambah Customer';
+  ['fc-nama','fc-wa','fc-produk','fc-cross','fc-fu-date','fc-value','fc-freq','fc-catatan'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fc-platform').value = 'Shopee';
+  document.getElementById('fc-status').value   = 'Warm';
+  document.getElementById('fc-tag').value      = 'Prospect';
+  document.getElementById('fc-prio').value     = '';
+  document.getElementById('fc-total-order').value = '0';
+  openModal('modal-customer');
+}
+
+function openEditCustomer(i) {
+  editCustomerIndex = i;
+  const c = customers[i];
+  document.getElementById('modal-customer-title').textContent = 'Edit Customer';
+  document.getElementById('fc-nama').value        = c.nama||'';
+  document.getElementById('fc-wa').value          = c.wa||'';
+  document.getElementById('fc-platform').value    = c.platform||'Shopee';
+  document.getElementById('fc-status').value      = c.status||'Warm';
+  document.getElementById('fc-tag').value         = c.tag||'Prospect';
+  document.getElementById('fc-total-order').value = c.total_order||'0';
+  document.getElementById('fc-produk').value      = c.produk||'';
+  document.getElementById('fc-cross').value       = c.cross||'';
+  document.getElementById('fc-fu-date').value     = c.jadwal_fu||'';
+  document.getElementById('fc-prio').value        = c.prioritas_fu||'';
+  document.getElementById('fc-value').value       = c.est_value||'';
+  document.getElementById('fc-freq').value        = c.frekuensi||'';
+  document.getElementById('fc-catatan').value     = c.catatan||'';
+  openModal('modal-customer');
+}
+
+function editCurrentCustomer() {
+  if (!activeCustomer) return;
+  const idx = customers.indexOf(activeCustomer);
+  closePanel();
+  openEditCustomer(idx);
+}
+
+async function saveCustomer() {
+  const nama = document.getElementById('fc-nama').value.trim();
+  if (!nama) { toast('Nama customer wajib diisi!', true); return; }
+  const obj = {
+    nama, wa:document.getElementById('fc-wa').value.trim(),
+    platform:document.getElementById('fc-platform').value,
+    status:document.getElementById('fc-status').value,
+    tag:document.getElementById('fc-tag').value,
+    total_order:document.getElementById('fc-total-order').value||'0',
+    produk:document.getElementById('fc-produk').value.trim(),
+    cross:document.getElementById('fc-cross').value.trim(),
+    jadwal_fu:document.getElementById('fc-fu-date').value,
+    prioritas_fu:document.getElementById('fc-prio').value,
+    est_value:document.getElementById('fc-value').value||'0',
+    frekuensi:document.getElementById('fc-freq').value.trim(),
+    catatan:document.getElementById('fc-catatan').value.trim(),
+    status_update:'Aktif'
+  };
+  if (!API_URL) { toast('Belum terhubung ke Sheets', true); return; }
+  try {
+    setSyncDot('spin','Menyimpan...');
+    const action = editCustomerIndex >= 0 ? 'update' : 'add';
+    const payload = {action, data:obj};
+    if (editCustomerIndex >= 0) payload.rowIndex = customers[editCustomerIndex]._row;
+    await apiAction(payload);
+    await loadAll();
+    toast(editCustomerIndex >= 0 ? '✓ Data diperbarui' : '✓ Customer ditambahkan');
+    closeModal('modal-customer');
+  } catch(e) { setSyncDot('err','Gagal'); toast('Gagal: '+e.message, true); }
+}
+
+async function deleteCustomer(i) {
+  if (!confirm(`Hapus "${customers[i].nama}"?`)) return;
+  try {
+    setSyncDot('spin','Menghapus...');
+    await apiAction({action:'delete', rowIndex:customers[i]._row});
+    await loadAll(); toast('Customer dihapus');
+  } catch(e) { toast('Gagal hapus: '+e.message, true); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  LOG FOLLOW-UP & CLOSING
+// ══════════════════════════════════════════════════════════════════════════
+function openLogFU() {
+  if (!activeCustomer) return;
+  document.getElementById('fu-customer-name').textContent = '👤 ' + activeCustomer.nama;
+  document.getElementById('ffu-date').value = todayStr();
+  document.getElementById('ffu-topic').value = '';
+  document.getElementById('ffu-response').value = '';
+  document.getElementById('ffu-resp-cat').value = 'Positif';
+  document.getElementById('ffu-next').value = 'Tidak';
+  document.getElementById('ffu-next-date-wrap').style.display = 'none';
+  openModal('modal-fu');
+}
+
+function openLogClosing() {
+  if (!activeCustomer) return;
+  document.getElementById('cl-customer-name').textContent = '👤 ' + activeCustomer.nama;
+  document.getElementById('fcl-date').value = todayStr();
+  document.getElementById('fcl-produk').value = '';
+  document.getElementById('fcl-nilai').value = '';
+  document.getElementById('fcl-catatan').value = '';
+  document.getElementById('fcl-platform').value = activeCustomer.platform || 'Shopee';
+  openModal('modal-closing');
+}
+
+function toggleNextFU() {
+  const show = document.getElementById('ffu-next').value === 'Ya';
+  document.getElementById('ffu-next-date-wrap').style.display = show ? 'block' : 'none';
+}
+
+async function saveLogFU() {
+  if (!activeCustomer) return;
+  const topik = document.getElementById('ffu-topic').value.trim();
+  if (!topik) { toast('Topik follow-up wajib diisi!', true); return; }
+  const obj = {
+    customer:    activeCustomer.nama,
+    tipe:        'Follow-up',
+    tanggal:     document.getElementById('ffu-date').value,
+    topik,
+    respons:     document.getElementById('ffu-response').value.trim(),
+    resp_cat:    document.getElementById('ffu-resp-cat').value,
+    next_fu:     document.getElementById('ffu-next').value,
+    next_fu_date:document.getElementById('ffu-next-date').value||'',
+    pic:         document.getElementById('ffu-pic').value,
+    produk:'', nilai:'', platform:'', catatan:''
+  };
+  try {
+    setSyncDot('spin','Menyimpan log...');
+    await apiAction({action:'addLog', data:obj});
+    await loadAll();
+    renderPanelFULog(activeCustomer.nama);
+    toast('✓ Log follow-up disimpan');
+    closeModal('modal-fu');
+
+    // Auto-update jadwal FU lanjutan di customer jika ada
+    if (obj.next_fu === 'Ya' && obj.next_fu_date) {
+      const idx = customers.findIndex(c => c.nama === activeCustomer.nama);
+      if (idx >= 0) {
+        const updPayload = {
+          action:'update',
+          rowIndex: customers[idx]._row,
+          data: {...customers[idx], jadwal_fu: obj.next_fu_date, prioritas_fu:''}
+        };
+        await apiAction(updPayload);
+        await loadAll();
+      }
+    }
+  } catch(e) { toast('Gagal simpan log: '+e.message, true); }
+}
+
+async function saveClosing() {
+  if (!activeCustomer) return;
+  const produk = document.getElementById('fcl-produk').value.trim();
+  const nilai  = document.getElementById('fcl-nilai').value;
+  if (!produk || !nilai) { toast('Produk dan nilai wajib diisi!', true); return; }
+  const obj = {
+    customer: activeCustomer.nama,
+    tipe:     'Closing',
+    tanggal:  document.getElementById('fcl-date').value,
+    produk,
+    nilai,
+    platform: document.getElementById('fcl-platform').value,
+    catatan:  document.getElementById('fcl-catatan').value.trim(),
+    pic:      document.getElementById('fcl-pic').value,
+    topik:'', respons:'', resp_cat:'', next_fu:'', next_fu_date:''
+  };
+  try {
+    setSyncDot('spin','Menyimpan...');
+    await apiAction({action:'addLog', data:obj});
+    // Update customer: increment total_order, update status ke Follow-up
+    const idx = customers.findIndex(c => c.nama === activeCustomer.nama);
+    if (idx >= 0) {
+      const c = customers[idx];
+      const newTotal = (parseInt(c.total_order||0) + 1);
+      const newTag = newTotal >= 4 ? 'Platinum' : newTotal >= 2 ? 'Gold' : 'Silver';
+      await apiAction({
+        action:'update', rowIndex:c._row,
+        data:{...c, total_order:String(newTotal), tag:newTag, status:'Follow-up'}
+      });
+    }
+    await loadAll();
+    renderPanelOrderLog(activeCustomer.nama);
+    toast('🎉 Closing berhasil disimpan! Tag customer diperbarui.');
+    closeModal('modal-closing');
+  } catch(e) { toast('Gagal simpan closing: '+e.message, true); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  EXPORT CSV
+// ══════════════════════════════════════════════════════════════════════════
+function exportCSV() {
+  const cols=['nama','tag','wa','platform','status','produk','total_order','jadwal_fu','est_value','catatan'];
+  const hdr=['Nama','Tag','WhatsApp','Platform','Status','Produk','Total Order','Jadwal FU','Est. Value','Catatan'];
+  const rows=customers.map(c=>cols.map(k=>`"${(c[k]||'').toString().replace(/"/g,'""')}"`).join(','));
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+[hdr.join(','),...rows].join('\n')],{type:'text/csv'}));
+  a.download='CRM_Hypospot_'+todayStr()+'.csv'; a.click();
+  toast('✓ CSV di-export');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════════════════════
+function todayStr(){return new Date().toISOString().split('T')[0]}
+function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().split('T')[0]}
+function fmtDate(s){if(!s||s==='—')return '—';try{const[y,m,d]=s.split('-');return`${d}/${m}/${y}`}catch{return s||'—'}}
+function esc(s){return(s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function fuTag2(fu,today){
+  if(!fu||fu==='—')return '';
+  if(fu<today)return '<span class="fu-tag tnow">Terlambat</span>';
+  if(fu===today)return '<span class="fu-tag tnow">Hari Ini</span>';
+  if(fu===addDays(1))return '<span class="fu-tag tsoon">Besok</span>';
+  if(fu<=addDays(7))return '<span class="fu-tag tweek">Minggu Ini</span>';
+  if(fu<=addDays(30))return '<span class="fu-tag tmonth">Bulan Ini</span>';
+  return '';
+}
+
+function badge(s){
+  const m={'Hot':'hot','Warm':'warm','Cold':'cold','Follow-up':'followup','Cross-sell':'crosssell','Lost':'lost'};
+  const icons={'Hot':'🔥','Warm':'☀️','Cold':'❄️','Follow-up':'🔔','Cross-sell':'✨','Lost':'✗'};
+  return`<span class="badge ${m[s]||'cold'}">${icons[s]||''} ${esc(s)||'—'}</span>`;
+}
+
+function tagBadge(t) {
+  const m={Platinum:'tag-platinum',Gold:'tag-gold',Silver:'tag-silver',Prospect:'tag-prospect',Dormant:'tag-dormant'};
+  const icons={Platinum:'🌟',Gold:'🥇',Silver:'🥈',Prospect:'🔍',Dormant:'💤'};
+  return`<span class="badge ${m[t]||'tag-prospect'}">${icons[t]||'🔍'} ${esc(t)||'Prospect'}</span>`;
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+function setSyncDot(state,label){
+  document.getElementById('sync-dot').className='sync-dot '+state;
+  document.getElementById('sync-label').textContent=label;
+}
+
+let toastTimer;
+function toast(msg,err=false){
+  const el=document.getElementById('toast');el.textContent=msg;el.className='show'+(err?' err':'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.className='',3500);
+}
+</script>
+</body>
+</html>
